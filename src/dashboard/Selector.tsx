@@ -1,27 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import StudentDashboardPage from './StudentDashboardPage';
 import InstructorDashboardPage from './InstructorDashboardPage';
+import DashBoardNavBar from './DashBoardNavBar';
 
-const DashboardMainPage: React.FC = () => {
+const DashboardMainPage = () => {
   const [isStudent, setIsStudent] = useState(true);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md transition-transform duration-300 ease-in-out">
+    <div className="flex flex-col items-center justify-center w-screen h-screen bg-blue-50">
+      <DashBoardNavBar />
         {isStudent ? (
           <StudentDashboardPage />
         ) : (
           <InstructorDashboardPage />
         )}
-        <div className="mt-4 text-center">
-          <button
-            className="text-blue-500 underline"
-            onClick={() => setIsStudent(prevState => !prevState)}
-          >
-            Switch to {isStudent ? 'Instructor' : 'Student'}
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

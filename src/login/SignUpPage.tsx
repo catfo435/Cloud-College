@@ -60,12 +60,20 @@ const SignUpPage: React.FC = () => {
 
     const studentData: any = jwtDecode(res.credential!)
 
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + `/students/${studentData.email}`)
+    try{
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + `/students/${studentData.email}`)
 
     if (response.status === 200) {
       window.location.href = "/dashboard"
       return;
-    } //user exists alr implement login
+    }
+
+    }
+    catch(e){
+      console.log(e);
+      alert("Something went wrong!")
+      return;
+    }3
 
     setForm({type:"email",value : studentData.email});
     setForm({type:"name",value : studentData.name});
