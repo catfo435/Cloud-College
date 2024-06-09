@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
@@ -32,6 +32,12 @@ const SignUpPage: React.FC = () => {
   }
   
   }
+
+  useEffect(() => {
+    if (window.localStorage.getItem("userType") !== undefined){
+      window.location.href = "/dashboard"
+    }
+  },[])
   
   const [form,setForm] = useReducer(reducer,{email:"",name:"",instituteId:"",phone:"",college:""})
 
@@ -48,6 +54,7 @@ const SignUpPage: React.FC = () => {
       body: JSON.stringify({...form,profile_picture:"dummystring"}), // body data type must match "Content-Type" header
     })
     .then((res) => {
+      window.localStorage.setItem("userEmail",form.email)
       if (res.status === 201) alert("Signed up Succesfully")
     })
     .catch((e) => {
@@ -65,6 +72,7 @@ const SignUpPage: React.FC = () => {
 
     if (response.status === 200) {
       window.location.href = "/dashboard"
+      window.localStorage.setItem("userType",isStudent?"student":"instructor")
       return;
     }
 

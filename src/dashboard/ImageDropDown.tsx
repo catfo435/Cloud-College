@@ -13,7 +13,7 @@ const ImageDropdown = () => {
       <div>
         <button 
           type="button" 
-          className="inline-flex justify-center w-full rounded-md border px-4 py-2" 
+          className="inline-flex justify-center w-full rounded-md px-4 py-2" 
           id="options-menu" 
           aria-expanded="true" 
           aria-haspopup="true" 
@@ -28,7 +28,7 @@ const ImageDropdown = () => {
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">My Account</a>
             <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Wallet</a>

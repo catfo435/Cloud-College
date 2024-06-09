@@ -1,21 +1,14 @@
-import { useState } from 'react';
-import StudentDashboardPage from './StudentDashboardPage';
-import InstructorDashboardPage from './InstructorDashboardPage';
 import DashBoardNavBar from './DashBoardNavBar';
+import { Outlet } from 'react-router-dom';
 
-const DashboardMainPage = () => {
-  const [isStudent, setIsStudent] = useState(true);
+const Selector = () => {
 
   return (
-    <div className="flex flex-col items-center justify-center w-screen h-screen bg-blue-50">
-      <DashBoardNavBar />
-        {isStudent ? (
-          <StudentDashboardPage />
-        ) : (
-          <InstructorDashboardPage />
-        )}
+    <div className="flex flex-col items-center justify-center w-screen h-screen bg-blue-100">
+        <DashBoardNavBar />
+        <Outlet />
     </div>
   );
 };
 
-export default DashboardMainPage;
+export default Selector;

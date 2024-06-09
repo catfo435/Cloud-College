@@ -3,13 +3,12 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import SignUpPage from './login/SignUpPage.tsx';
 import App from './App.tsx';
-
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import {createBrowserRouter,RouterProvider,} from "react-router-dom";
 import Selector from './dashboard/Selector.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import Explore from './dashboard/explore/Explore.tsx';
+import Dashboard from './dashboard/Dashboard.tsx';
+import CoursePage from './course/CoursePage.tsx';
 
 
 const router = createBrowserRouter([
@@ -23,8 +22,22 @@ const router = createBrowserRouter([
   },
   {
     path: "dashboard",
-    element: <Selector />,
+    element : <Selector />,
+    children : [
+      {
+        path : "",
+        element : <Dashboard />
+      },
+      {
+        path : "explore",
+        element : <Explore />
+      }
+    ]
   },
+  {
+    path: "courses/:courseId",
+    element: <CoursePage />
+  }
 ]);
 
 
