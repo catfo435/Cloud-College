@@ -10,6 +10,7 @@ const CoursePage = () => {
 
     
     const [course,setCourse] = useState<any>()
+    const [databaseId,setDataBaseId] = useState<string>()
     const [openModal, setOpenModal] = useState(false);
     const [isStudent, setIsStudent] = useState(true);
     const [isEnrolled, setIsEnrolled] = useState(false);
@@ -72,6 +73,7 @@ const CoursePage = () => {
 
     useEffect(() => {
 
+        setDataBaseId(window.localStorage.getItem("userId")!)
         fetch(import.meta.env.VITE_BACKEND_URL + `/students/${window.localStorage.getItem("userEmail")}/courses`)
         .then((res) => (res.json()).then((courses) => {          
             setIsEnrolled(courses.some((course : any) => (course._id === courseId)))
@@ -91,7 +93,7 @@ const CoursePage = () => {
                 <AddContentModal openModal={openModal} setOpenModal={setOpenModal} handleSubmit={fetchCourse} courseId={courseId!}/>
                 <CourseNavBar course={course} isEnrolled={isEnrolled} setIsEnrolled={setIsEnrolled} />
                 
-                {isEnrolled?(
+                {(!isStudent || isEnrolled)?(
                     <>
                     <div className="flex relative items-center mt-10 ml-5">
                     <span className="font-semibold text-3xl">Course Content</span>
@@ -100,7 +102,7 @@ const CoursePage = () => {
                         <span className="ml-2 text-red-600 text-xl">Live </span> 
                     </button>
                     {/* check if live stream exists then put live button */}
-                    {!isStudent?<button onClick={() => {setOpenModal(true)}}>
+                    {(!isStudent && (course.instructors.includes(databaseId)))?<button onClick={() => {setOpenModal(true)}}>
                     <div className="flex justify-center items-center absolute right-5 top-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md p-3 w-fit h-10">Add Content</div>
                     </button>:""}
                 </div>

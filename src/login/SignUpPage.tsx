@@ -1,20 +1,13 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
+import { Button } from 'flowbite-react';
 
 const SignUpPage: React.FC = () => {
   const [isStudent, setIsStudent] = useState(true);
   const [googleOAuthSuccess,setGoogleOAuthSuccess] = useState(false);
+  const [loading,setLoading] = useState(false)
 
-
-  // const toBase64 = (file:File):Promise<string> => {
-  //   return new Promise<string> ((resolve,reject)=> {
-  //        const reader = new FileReader();
-  //        reader.readAsDataURL(file);
-  //        reader.onload = () => resolve(reader.result?.toString() || '');
-  //        reader.onerror = error => reject(error);
-  //    })
-  //   }
 
   //@ts-ignore
   const reducer = (state,action) => {
@@ -46,34 +39,42 @@ const SignUpPage: React.FC = () => {
   //@ts-ignore
   const handleSignUp = async (e) => {
     e.preventDefault()
-    fetch(import.meta.env.VITE_BACKEND_URL + '/students', {
+    setLoading(true)
+    fetch(import.meta.env.VITE_BACKEND_URL + `/${isStudent?"students":"instructors"}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({...form,profile_picture:"dummystring"}), // body data type must match "Content-Type" header
     })
-    .then((res) => {
+    .then(async (res) => {
       window.localStorage.setItem("userEmail",form.email)
+      window.localStorage.setItem("userType",isStudent?"student":"instructor")
+      window.localStorage.setItem("userId",(await res.json())._id)
       if (res.status === 201) alert("Signed up Succesfully")
+      window.location.href = "/dashboard"
     })
     .catch((e) => {
       alert("Error!")
       console.error(e)
     })
+    .finally(() => {
+      setLoading(false)
+    })
   }
 
   const handleGoogleLogin = async (res: any) => {
 
-    const studentData: any = jwtDecode(res.credential!)
+    const Data: any = jwtDecode(res.credential!)
 
     try{
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL + `/students/${studentData.email}`)
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + `/${isStudent?"students":"instructors"}/${Data.email}`)
 
     if (response.status === 200) {
       window.location.href = "/dashboard"
-      window.localStorage.setItem("userEmail",studentData.email)
+      window.localStorage.setItem("userEmail",Data.email)
       window.localStorage.setItem("userType",isStudent?"student":"instructor")
+      window.localStorage.setItem("userId",(await response.json())._id)
       return;
     }
 
@@ -84,8 +85,8 @@ const SignUpPage: React.FC = () => {
       return;
     }3
 
-    setForm({type:"email",value : studentData.email});
-    setForm({type:"name",value : studentData.name});
+    setForm({type:"email",value : Data.email});
+    setForm({type:"name",value : Data.name});
     setGoogleOAuthSuccess(true)
   };
 
@@ -123,7 +124,7 @@ const SignUpPage: React.FC = () => {
           {isStudent ? 'Student Sign Up' : 'Instructor Sign Up'}
         </h2>
         
-        <form className="space-y-4" onSubmit={handleSignUp}>
+        <form className="space-y-4 w-full" onSubmit={handleSignUp}>
           <div className='flex justify-center items-center'>
           <GoogleLogin
           onSuccess={handleGoogleLogin}
@@ -182,12 +183,10 @@ const SignUpPage: React.FC = () => {
             </>
           )}
           <div className='h-5'></div> 
-          <div>
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-transform duration-200 ease-in-out transform hover:scale-105">
-              Sign Up
-            </button>
+          <div className='flex justify-center w-full'>
+            <Button type='submit' color="blue" size="lg" isProcessing={loading}>
+              Submit
+            </Button>
           </div>
           </div>
         ):""}

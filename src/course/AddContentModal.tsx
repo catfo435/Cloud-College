@@ -1,4 +1,4 @@
-import { Button, Checkbox, Label, Modal, TextInput } from "flowbite-react";
+import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { DropFile } from "./DropFile";
 import { initializeApp } from "firebase/app";
@@ -19,7 +19,7 @@ export function AddContentModal({openModal, setOpenModal, handleSubmit, courseId
     try {
 
       const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
-      const app = initializeApp(firebaseConfig)
+      initializeApp(firebaseConfig)
 
       const storage = getStorage()
       let fileURL = ""

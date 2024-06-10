@@ -16,7 +16,7 @@ const CourseNavBar = ({course, isEnrolled, setIsEnrolled} : {course : any, isEnr
                 </div>
                 </button>
                 <div className="flex justify-end items-center w-fit h-full text-blue-500">
-                <button onClick={() => {window.location.href = "/dashboard"}}><span className="ml-4">Back to My Courses</span></button>
+                <button onClick={() => {history.back()}}><span className="ml-4">Back</span></button>
                 </div>
                 </div>
                 <div className="flex justify-center items-center w-fit h-16 text-gray-600 text-3xl">{course.courseId} : {course.name}</div>
