@@ -4,19 +4,22 @@ import { useParams } from "react-router-dom";
 import { AddContentModal } from "./AddContentModal";
 import { getStorage, ref } from "firebase/storage";
 import { initializeApp } from "firebase/app";
+import { Button } from "flowbite-react";
 
 const CoursePage = () => {
 
     
-    const[course,setCourse] = useState()
+    const [course,setCourse] = useState<any>()
     const [openModal, setOpenModal] = useState(false);
     const [isStudent, setIsStudent] = useState(true);
+    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [loading, setLoading] = useState(false);
     const {courseId} = useParams()
 
-    const fetchCourses = () => {
+    const fetchCourse = () => {
         fetch(import.meta.env.VITE_BACKEND_URL + `/courses/${courseId}`)
         .then((res) => (res.json()).then(setCourse))
-        .catch((e) => {
+        .catch(() => {
             alert("Error Occured")
             window.location.href = "/dashboard"
             return;
@@ -26,7 +29,7 @@ const CoursePage = () => {
     const fileDownload = async (url : any) => {
         //@ts-ignore
         const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
-        const app = initializeApp(firebaseConfig)
+        initializeApp(firebaseConfig)
 
         const file = ref(getStorage(),url)
 
@@ -51,10 +54,32 @@ const CoursePage = () => {
             }        
     }
 
+    const handleEnroll = () => {
+        setLoading(true)
+        fetch(import.meta.env.VITE_BACKEND_URL + `/students/${window.localStorage.getItem("userEmail")}/addCourse`,{
+            method : "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+              },
+            body: JSON.stringify({_id:course!._id})
+        })
+        .then((res) => (res.json()).then(() => {
+            setIsEnrolled(true)
+        }))
+        .catch(console.error)
+        .finally(() => {setLoading(false)})
+    }
+
     useEffect(() => {
 
+        fetch(import.meta.env.VITE_BACKEND_URL + `/students/${window.localStorage.getItem("userEmail")}/courses`)
+        .then((res) => (res.json()).then((courses) => {          
+            setIsEnrolled(courses.some((course : any) => (course._id === courseId)))
+        }))
+        .catch(console.error)
+
         setIsStudent(window.localStorage.getItem("userType") === "student")
-        fetchCourses()
+        fetchCourse()
         
     },[])
 
@@ -63,9 +88,12 @@ const CoursePage = () => {
         {
             course?(
             <div className="flex flex-col w-screen h-screen bg-blue-100">
-                <AddContentModal openModal={openModal} setOpenModal={setOpenModal} handleSubmit={fetchCourses} courseId={courseId!}/>
-                <CourseNavBar course={course} />
-                <div className="flex relative items-center mt-10 ml-5">
+                <AddContentModal openModal={openModal} setOpenModal={setOpenModal} handleSubmit={fetchCourse} courseId={courseId!}/>
+                <CourseNavBar course={course} isEnrolled={isEnrolled} setIsEnrolled={setIsEnrolled} />
+                
+                {isEnrolled?(
+                    <>
+                    <div className="flex relative items-center mt-10 ml-5">
                     <span className="font-semibold text-3xl">Course Content</span>
                     <button className="flex justify-center items-center animate-pulse">
                         <div className="w-3 h-3 ml-3 bg-red-600 rounded-full"></div>
@@ -77,20 +105,25 @@ const CoursePage = () => {
                     </button>:""}
                 </div>
                 <div className="flex flex-col courseContent mt-5 ml-4 w-screen">
-                <div className="flex flex-col p-4 w-[80%] mb-2 h-28">
-                    {
-                        //@ts-ignore
-                        course.content.map((topic,idx) => (
-                            <div className="mb-4">
-                                <span className="text-2xl ml-2">• {topic.heading}</span>
-                                <div className="divider my-2 w-80 h-0.5 bg-gray-400"></div>
-                                <div className="ml-2 text-lg mb-4">{topic.description}</div>
-                                {topic.file?<div className="ml-2">Uploaded File: <button onClick={() => {fileDownload(topic.file)}}>Click to Open Attachment</button></div>:""}
-                            </div>
-                        ))
-                    }
-                </div>
-                </div>
+                    <div className="flex flex-col p-4 w-[80%] mb-2 h-28">
+                        {
+                            //@ts-ignore
+                            course.content.map((topic,idx) => (
+                                <div className="mb-4">
+                                    <span className="text-2xl ml-2">• {topic.heading}</span>
+                                    <div className="divider my-2 w-80 h-0.5 bg-gray-400"></div>
+                                    <div className="ml-2 text-lg mb-4">{topic.description}</div>
+                                    {topic.file?<div className="ml-2">Uploaded File: <button onClick={() => {fileDownload(topic.file)}}>Click to Open Attachment</button></div>:""}
+                                </div>
+                            ))
+                        }
+                    </div>  
+                    </div>
+                    </>
+                ):<div className="w-screen grow flex flex-col items-center">
+                    <span className="text-5xl font-semibold mt-48 mb-10">You are not enrolled in this course</span>
+                    <Button onClick={handleEnroll} color="blue" size="xl" isProcessing={loading} >Enroll</Button>
+                </div>}
             </div>
         ):""
         }

@@ -72,6 +72,7 @@ const SignUpPage: React.FC = () => {
 
     if (response.status === 200) {
       window.location.href = "/dashboard"
+      window.localStorage.setItem("userEmail",studentData.email)
       window.localStorage.setItem("userType",isStudent?"student":"instructor")
       return;
     }
