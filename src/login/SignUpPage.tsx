@@ -34,7 +34,7 @@ const SignUpPage: React.FC = () => {
   }
 
   useEffect(() => {
-    if (window.localStorage.getItem("userType") !== undefined){
+    if (window.localStorage.getItem("userType") !== null){
       window.location.href = "/dashboard"
     }
   },[])

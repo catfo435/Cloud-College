@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import CourseNavBar from "./CourseNavBar";
 import { useParams } from "react-router-dom";
 import { AddContentModal } from "./AddContentModal";
+import { getStorage, ref } from "firebase/storage";
+import { initializeApp } from "firebase/app";
 
 const CoursePage = () => {
 
@@ -21,10 +23,37 @@ const CoursePage = () => {
         })
     }
 
+    const fileDownload = async (url : any) => {
+        //@ts-ignore
+        const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
+        const app = initializeApp(firebaseConfig)
+
+        const file = ref(getStorage(),url)
+
+        console.log(url,file)
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = file.name;
+                document.body.appendChild(a);
+                a.click();
+                URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('There was an error downloading the file:', error);
+            }        
+    }
+
     useEffect(() => {
 
         setIsStudent(window.localStorage.getItem("userType") === "student")
-
         fetchCourses()
         
     },[])
@@ -43,7 +72,7 @@ const CoursePage = () => {
                         <span className="ml-2 text-red-600 text-xl">Live </span> 
                     </button>
                     {/* check if live stream exists then put live button */}
-                    {isStudent?<button onClick={() => {setOpenModal(true)}}>
+                    {!isStudent?<button onClick={() => {setOpenModal(true)}}>
                     <div className="flex justify-center items-center absolute right-5 top-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md p-3 w-fit h-10">Add Content</div>
                     </button>:""}
                 </div>
@@ -55,7 +84,8 @@ const CoursePage = () => {
                             <div className="mb-4">
                                 <span className="text-2xl ml-2">• {topic.heading}</span>
                                 <div className="divider my-2 w-80 h-0.5 bg-gray-400"></div>
-                                <div className="ml-2">{topic.description}</div>
+                                <div className="ml-2 text-lg mb-4">{topic.description}</div>
+                                {topic.file?<div className="ml-2">Uploaded File: <button onClick={() => {fileDownload(topic.file)}}>Click to Open Attachment</button></div>:""}
                             </div>
                         ))
                     }
@@ -63,7 +93,7 @@ const CoursePage = () => {
                 </div>
             </div>
         ):""
-        } mb-2
+        }
         </>
     );
 }
