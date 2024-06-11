@@ -4,8 +4,8 @@ An online learning platform.
 
 ### TO DO:
 
-- [ ] Register and Enroll in Courses
-- [ ] Instructors can create courses 
+- [X] Register and Enroll in Courses
+- [X] Instructors can create courses 
 - [X] CRUD Operations on Students, Instructors, Courses
 - [ ] Redis Caching
 - [ ] Dockerise Application
@@ -16,7 +16,7 @@ An online learning platform.
   #### Front End
   - [ ] Home Page
   - [X] Login Page
-  - [ ] Dashboard
-  - [ ] Course Page
+  - [X] Dashboard
+  - [X] Course Page
   - [ ] Live/Recorded Classes
 
