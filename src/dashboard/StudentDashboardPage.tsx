@@ -6,7 +6,7 @@ const StudentDashboardPage: React.FC = () => {
   const [courses,setCourses] = useState([])
 
   useEffect( () => {
-    fetch(import.meta.env.VITE_BACKEND_URL + `/students/pranavpoluri435@gmail.com/courses`)
+    fetch(import.meta.env.VITE_BACKEND_URL + `/students/${localStorage.getItem("userEmail")}/courses`)
     .then((res) => (res.json()).then(setCourses))
     .catch(console.error)
 

@@ -1,4 +1,4 @@
-import { Button, Label, Modal, TextInput } from "flowbite-react";
+import { Button, Modal, TextInput } from "flowbite-react";
 import { ChangeEvent, useState } from "react";
 export function ViewWallet({openModal, setOpenModal, wallet, addBalance} : {openModal : boolean, setOpenModal : Function , wallet : string, addBalance : Function}) {
 
@@ -23,7 +23,7 @@ export function ViewWallet({openModal, setOpenModal, wallet, addBalance} : {open
               </div>
               <div className="flex justify-center items-center">
                 <div className="flex justify-center w-36 items-center"><TextInput size={3} value={incrBal} onChange={(e : ChangeEvent<HTMLInputElement>) => {setIncrBal(e.target.value)}}></TextInput></div>
-                <Button onClick={() => {
+                <Button isProcessing={loading} onClick={() => {
                   setLoading(false)
                   addBalance(incrBal)
                   setLoading(true)

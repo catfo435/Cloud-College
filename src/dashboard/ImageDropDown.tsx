@@ -8,8 +8,10 @@ const ImageDropdown = () => {
   const [openModal,setOpenModal] = useState(false)
 
   const toggleDropdown = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/students/${localStorage.getItem("userId")}/wallet`)
+    if (localStorage.getItem("userType") === "student"){
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/students/${localStorage.getItem("userId")}/wallet`)
     .then((res) => (res.json()).then((data) => {setWallet(data.wallet)}));
+    }
     setIsOpen(!isOpen);
   };
 
@@ -18,8 +20,10 @@ const ImageDropdown = () => {
   }
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/students/${localStorage.getItem("userId")}/wallet`)
-    .then((res) => (res.json()).then((data) => {setWallet(data.wallet)}))
+    if (localStorage.getItem("userType") === "student"){
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/students/${localStorage.getItem("userId")}/wallet`)
+    .then((res) => (res.json()).then((data) => {setWallet(data.wallet)}));
+    }
   },[])
 
   return (
