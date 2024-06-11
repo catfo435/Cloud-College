@@ -15,7 +15,7 @@ const StudentDashboardPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center grow w-screen">
       <span className='text-4xl text-center font-bold mt-20 mb-10'>Courses Offered</span>
-      <div className="flex w-[80%] items-center justify-center">
+      <div className="flex w-[90%] items-center justify-center">
       <CourseList courses={courses} />
       </div>
     </div>

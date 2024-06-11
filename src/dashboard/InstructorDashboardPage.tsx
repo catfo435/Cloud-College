@@ -25,7 +25,7 @@ const StudentDashboardPage: React.FC = () => {
       </div>
       <AddCourseModal openModal={openModal} setOpenModal={setOpenModal} handleSubmit={fetchCourses} />
       <span className='text-4xl text-center font-bold mt-20 mb-10'>Your Courses</span>
-      <div className="flex w-[80%] items-center justify-center">
+      <div className="flex w-[90%] items-center justify-center">
       {!courses.length?<LooksEmpty /> :<CourseList courses={courses} />}
       </div>
     </div>

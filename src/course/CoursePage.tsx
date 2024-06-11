@@ -58,6 +58,7 @@ const CoursePage = () => {
 
     const handleEnroll = () => {
         setLoading(true)
+
         fetch(import.meta.env.VITE_BACKEND_URL + `/students/${window.localStorage.getItem("userEmail")}/addCourse`,{
             method : "PATCH",
             headers: {
@@ -65,9 +66,16 @@ const CoursePage = () => {
               },
             body: JSON.stringify({_id:course!._id})
         })
-        .then((res) => (res.json()).then(() => {
-            setIsEnrolled(true)
-        }))
+        .then((res) => {
+            if (res.status == 406) {
+                alert ("Insufficient Funds");
+            }
+            else {
+                res.json().then(() => {
+                    setIsEnrolled(true)
+                })
+            }
+        })
         .catch(console.error)
         .finally(() => {setLoading(false)})
     }
@@ -100,11 +108,12 @@ const CoursePage = () => {
                     <>
                     <div className="flex relative items-center mt-10 ml-5">
                     <span className="font-semibold text-3xl">Course Content</span>
-                    {(isStudent || !(course.instructors.includes(databaseId)))?<button onClick={() => {window.location.href += "/livestream/join"}} className="flex justify-center items-center animate-pulse rounded-full">
+                    {
+                    (course.roomId !== "nolive")?((isStudent || !(course.instructors.includes(databaseId)))?<button onClick={() => {window.location.href += "/livestream/join"}} className="flex justify-center items-center animate-pulse rounded-full">
                         <div className="w-3 h-3 ml-3 bg-red-600 rounded-full"></div>
                         <span className="ml-2 text-red-600 text-xl">Live </span> 
                     </button>:<button onClick={() => {window.location.href += "/livestream/create"}} className="h-10 w-20 ml-5 p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">
-                        Go Live</button>}
+                        Go Live</button>):""}
                     {/* check if live stream exists then put live button */}
                     {(!isStudent && (course.instructors.includes(databaseId)))?<button onClick={() => {setOpenModal(true)}}>
                     <div className="flex justify-center items-center absolute right-5 top-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md p-3 w-fit h-10">Add Content</div>
@@ -127,7 +136,8 @@ const CoursePage = () => {
                     </div>
                     </>
                 ):<div className="w-screen grow flex flex-col items-center">
-                    <span className="text-5xl font-semibold mt-48 mb-10">You are not enrolled in this course</span>
+                    <span className="text-5xl font-semibold mt-48">You are not enrolled in this course</span>
+                    <span className="text-3xl font-semibold mt-5 mb-10">This course costs {course.price}</span>
                     <Button onClick={handleEnroll} color="blue" size="xl" isProcessing={loading} >Enroll</Button>
                 </div>}
             </div>

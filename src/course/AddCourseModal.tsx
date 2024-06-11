@@ -5,6 +5,7 @@ export function AddCourseModal({openModal, setOpenModal, handleSubmit} : {openMo
 
   const [name,setName] = useState('')
   const [courseId,setCourseId] = useState('')
+  const [price,setPrice] = useState("0")
   const [loading,setLoading] = useState(false)
 
   function onCloseModal() {
@@ -21,7 +22,7 @@ export function AddCourseModal({openModal, setOpenModal, handleSubmit} : {openMo
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({name,courseId,instructors:[window.localStorage.getItem("userId")],email:window.localStorage.getItem("userEmail")})
+        body: JSON.stringify({name,courseId,price,instructors:[window.localStorage.getItem("userId")],email:window.localStorage.getItem("userEmail")})
       })
 
       if (!response.ok) {
@@ -61,10 +62,14 @@ export function AddCourseModal({openModal, setOpenModal, handleSubmit} : {openMo
               />
             </div>
             <div>
-              <div className="mb-2 block">
+            <div className="mb-2 block">
                 <Label htmlFor="id" value="Course ID" />
               </div>
               <TextInput id="id" value={courseId} onChange={(e) => {setCourseId(e.target.value)}} required />
+              <div className="mb-2 block">
+                <Label htmlFor="price" value="Price" />
+              </div>
+              <TextInput id="price" value={price} onChange={(e) => {setPrice(e.target.value)}} required />
             </div>
             <div className="flex justify-center w-full">
               <Button isProcessing={loading} onClick={handleAddCourse} color="blue" >Add Course</Button>
