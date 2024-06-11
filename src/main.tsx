@@ -9,6 +9,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import Explore from './dashboard/explore/Explore.tsx';
 import Dashboard from './dashboard/Dashboard.tsx';
 import CoursePage from './course/CoursePage.tsx';
+import LiveStream from './course/stream/LiveStream.tsx';
 
 
 const router = createBrowserRouter([
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path: "courses/:courseId",
     element: <CoursePage />
+  },
+  {
+    path: "courses/:courseId/livestream/:action",
+    element : <LiveStream />
   }
 ]);
 

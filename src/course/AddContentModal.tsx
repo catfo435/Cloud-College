@@ -8,14 +8,18 @@ export function AddContentModal({openModal, setOpenModal, handleSubmit, courseId
   const [heading,setHeading] = useState('')
   const [desc,setDesc] = useState('')
   const [file,setFile] = useState<File>()
+  
+  const [loading,setLoading] = useState(false)
 
   function onCloseModal() {
-    setOpenModal(false);
     setHeading('')
     setDesc('')
+    setFile(undefined)
+    setOpenModal(false);
   }
 
   const handleAddContent = async () => {
+    setLoading(true)
     try {
 
       const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
@@ -42,11 +46,18 @@ export function AddContentModal({openModal, setOpenModal, handleSubmit, courseId
         throw new Error('Network response was not ok');
       }
 
+      setHeading('')
+      setDesc('')
+      setFile(undefined)
+
       setOpenModal(false)
       handleSubmit()
     } catch (err) {
       console.error(err)
       alert('Failed to add content. Please try again.');
+    }
+    finally{
+      setLoading(false)
     }
   }
 
@@ -80,7 +91,7 @@ export function AddContentModal({openModal, setOpenModal, handleSubmit, courseId
             <div>{file?file.name:""}</div>
             <DropFile handleFileUpload={(e : any) => {setFile(e.target.files[0])}}/>
             <div className="flex justify-center w-full">
-              <Button onClick={handleAddContent} color="blue" >Add Content</Button>
+              <Button isProcessing={loading} onClick={handleAddContent} color="blue" >Add Content</Button>
             </div>
           </div>
         </Modal.Body>

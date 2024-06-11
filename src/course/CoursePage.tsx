@@ -19,7 +19,9 @@ const CoursePage = () => {
 
     const fetchCourse = () => {
         fetch(import.meta.env.VITE_BACKEND_URL + `/courses/${courseId}`)
-        .then((res) => (res.json()).then(setCourse))
+        .then((res) => (res.json()).then((course) => {
+            setCourse(course)
+        }))
         .catch(() => {
             alert("Error Occured")
             window.location.href = "/dashboard"
@@ -34,7 +36,6 @@ const CoursePage = () => {
 
         const file = ref(getStorage(),url)
 
-        console.log(url,file)
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -74,11 +75,13 @@ const CoursePage = () => {
     useEffect(() => {
 
         setDataBaseId(window.localStorage.getItem("userId")!)
-        fetch(import.meta.env.VITE_BACKEND_URL + `/students/${window.localStorage.getItem("userEmail")}/courses`)
+        if(window.localStorage.getItem("userType") === "student"){
+            fetch(import.meta.env.VITE_BACKEND_URL + `/students/${window.localStorage.getItem("userEmail")}/courses`)
         .then((res) => (res.json()).then((courses) => {          
             setIsEnrolled(courses.some((course : any) => (course._id === courseId)))
         }))
         .catch(console.error)
+        }
 
         setIsStudent(window.localStorage.getItem("userType") === "student")
         fetchCourse()
@@ -97,10 +100,11 @@ const CoursePage = () => {
                     <>
                     <div className="flex relative items-center mt-10 ml-5">
                     <span className="font-semibold text-3xl">Course Content</span>
-                    <button className="flex justify-center items-center animate-pulse">
+                    {(isStudent || !(course.instructors.includes(databaseId)))?<button onClick={() => {window.location.href += "/livestream/join"}} className="flex justify-center items-center animate-pulse rounded-full">
                         <div className="w-3 h-3 ml-3 bg-red-600 rounded-full"></div>
                         <span className="ml-2 text-red-600 text-xl">Live </span> 
-                    </button>
+                    </button>:<button onClick={() => {window.location.href += "/livestream/create"}} className="h-10 w-20 ml-5 p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">
+                        Go Live</button>}
                     {/* check if live stream exists then put live button */}
                     {(!isStudent && (course.instructors.includes(databaseId)))?<button onClick={() => {setOpenModal(true)}}>
                     <div className="flex justify-center items-center absolute right-5 top-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md p-3 w-fit h-10">Add Content</div>
@@ -115,7 +119,7 @@ const CoursePage = () => {
                                     <span className="text-2xl ml-2">• {topic.heading}</span>
                                     <div className="divider my-2 w-80 h-0.5 bg-gray-400"></div>
                                     <div className="ml-2 text-lg mb-4">{topic.description}</div>
-                                    {topic.file?<div className="ml-2">Uploaded File: <button onClick={() => {fileDownload(topic.file)}}>Click to Open Attachment</button></div>:""}
+                                    {topic.file?<div className="ml-2">Uploaded File: <button className="hover:underline" onClick={() => {fileDownload(topic.file)}}>Click to Open Attachment</button></div>:""}
                                 </div>
                             ))
                         }

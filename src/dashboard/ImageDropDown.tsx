@@ -20,7 +20,7 @@ const ImageDropdown = () => {
           onClick={toggleDropdown}
         >
           <img 
-            src="/logo.png" 
+            src={window.localStorage.getItem("pfp")!}
             alt="Profile Picture"
             className="rounded-full w-12 h-12"
           />
@@ -33,7 +33,7 @@ const ImageDropdown = () => {
             <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">My Account</a>
             <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Wallet</a>
             <a href="#" onClick={() => {
-              window.localStorage.removeItem("userType")
+              window.localStorage.clear()
               window.location.href = "/login"
             }} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sign Out</a>
           </div>

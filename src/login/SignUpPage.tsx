@@ -2,6 +2,8 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { Button } from 'flowbite-react';
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
 const SignUpPage: React.FC = () => {
   const [isStudent, setIsStudent] = useState(true);
@@ -22,6 +24,8 @@ const SignUpPage: React.FC = () => {
           return {...state,phone: action.value};
       case "college":
           return {...state,college: action.value};
+      case "pfp":
+          return {...state,profile_pic: action.value};
   }
   
   }
@@ -32,7 +36,7 @@ const SignUpPage: React.FC = () => {
     }
   },[])
   
-  const [form,setForm] = useReducer(reducer,{email:"",name:"",instituteId:"",phone:"",college:""})
+  const [form,setForm] = useReducer(reducer,{email:"",name:"",instituteId:"",phone:"",college:"",profile_pic:""})
 
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true);
 
@@ -48,9 +52,26 @@ const SignUpPage: React.FC = () => {
       body: JSON.stringify({...form,profile_picture:"dummystring"}), // body data type must match "Content-Type" header
     })
     .then(async (res) => {
+
+      const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG)
+      initializeApp(firebaseConfig)
+
+      const storage = getStorage()
+      const picRef = ref(storage,`${form.email}/profile.png`)
+
+      try{
+        console.log(form.profile_pic)
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL!}/profile-pic/?url=${form.profile_pic}`)
+        uploadBytes(picRef,await response.blob())
+      }
+      catch (e){
+        console.error(e)
+      }
+
       window.localStorage.setItem("userEmail",form.email)
       window.localStorage.setItem("userType",isStudent?"student":"instructor")
       window.localStorage.setItem("userId",(await res.json())._id)
+      window.localStorage.setItem("pfp",form.profile_pic)
       if (res.status === 201) alert("Signed up Succesfully")
       window.location.href = "/dashboard"
     })
@@ -75,6 +96,7 @@ const SignUpPage: React.FC = () => {
       window.localStorage.setItem("userEmail",Data.email)
       window.localStorage.setItem("userType",isStudent?"student":"instructor")
       window.localStorage.setItem("userId",(await response.json())._id)
+      window.localStorage.setItem("pfp",Data.picture)
       return;
     }
 
@@ -87,6 +109,7 @@ const SignUpPage: React.FC = () => {
 
     setForm({type:"email",value : Data.email});
     setForm({type:"name",value : Data.name});
+    setForm({type:"pfp",value : Data.picture});
     setGoogleOAuthSuccess(true)
   };
 
